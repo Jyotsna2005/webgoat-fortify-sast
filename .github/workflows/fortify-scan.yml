@@ -1,0 +1,35 @@
+ 
+name: Fortify Scan
+ 
+on:
+  workflow_dispatch:
+ 
+permissions:
+  contents: read
+  actions: read
+  security-events: write
+ 
+jobs:
+  Security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+ 
+     
+      - name: Gitleaks Code Scan
+        uses: gitleaks/gitleaks-action@v3
+        continue-on-error: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+ 
+      - name: Print confirmation
+        run: echo "GitHub Actions workflow executed successfully!"
+
+      - name: Fortify on Demand Scan
+        uses: fortify/github-action@v3
+        env:
+          FOD_URL: ${{ vars.FOD_URL }}
+          FOD_CLIENT_ID: ${{ secrets.FOD_CLIENT_ID }}
+          FOD_CLIENT_SECRET: ${{ secrets.FOD_CLIENT_SECRET }}
+ 
